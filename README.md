@@ -2,6 +2,8 @@
 
 A modern Blog Web Application built with **ASP.NET Core MVC (.NET 10)** that allows users to create, manage, and interact with blog posts through a secure authentication and authorization system.
 
+---
+
 ## Features
 
 ### Authentication & Authorization
@@ -29,17 +31,29 @@ A modern Blog Web Application built with **ASP.NET Core MVC (.NET 10)** that all
 - View Comments
 - Delete Comments (Authorized Users)
 
+### Rich Text Editor
+- Create beautifully formatted blog posts
+- Support for headings, bold, italic, lists, links, and other rich text formatting
+- Enhanced writing experience for content creators
+
+### Image Uploads
+- Upload featured images for blog posts
+- Display images alongside posts
+- Secure image storage and management
+
+---
+
 ## Access Control
 
-The application uses Role-Based Authorization.
+The application uses **Role-Based Authorization**.
 
 ### Guest Users
 - View Categories
-- View Blog Posts
+- Browse Blog Posts
 - Read Comments
 
 ### Authenticated Users
-- Create Posts
+- Create Blog Posts
 - Add Comments
 
 ### Administrators
@@ -47,6 +61,8 @@ The application uses Role-Based Authorization.
 - Manage Posts
 - Manage Comments
 - Access Administrative Features
+
+---
 
 ## Technologies Used
 
@@ -58,10 +74,14 @@ The application uses Role-Based Authorization.
 - Razor Views
 - Bootstrap 5
 - LINQ
+- Rich Text Editor
+- Image Upload Support
+
+---
 
 ## Project Structure
 
-```
+```text
 BlogApp
 │
 ├── Controllers
@@ -75,6 +95,8 @@ BlogApp
 ├── Migrations
 └── Program.cs
 ```
+
+---
 
 ## Getting Started
 
@@ -112,17 +134,21 @@ dotnet ef database update
 dotnet run
 ```
 
+---
+
 ## Application Workflow
 
-1. Users can browse blog posts without logging in.
-2. Only authenticated users can create blog posts.
-3. Only authenticated users can post comments.
-4. Administrators manage categories and moderate content.
+1. Visitors can browse blog posts and categories without logging in.
+2. Users must register and log in to create blog posts.
+3. Only authenticated users can add comments.
+4. Administrators manage categories, posts, and comments.
+5. Authors can create rich, formatted blog posts using the integrated rich text editor.
+6. Blog posts can include uploaded images to enhance content.
+
+---
 
 ## Future Improvements
 
-- Image Uploads
-- Rich Text Editor
 - Search Functionality
 - Tags
 - Likes and Reactions
@@ -132,18 +158,32 @@ dotnet run
 - Soft Delete
 - REST API
 - Unit Testing
+- Dark Mode
 
-## Screenshots
+---
 
-_Add application screenshots here._
+
+
+Example sections:
+
+- Home Page
+- Categories
+- Blog Details
+- Rich Text Editor
+- User Login
+- Admin Dashboard
+
+---
 
 ## License
 
 This project is intended for learning and portfolio purposes.
 
+---
+
 ## Author
 
 **Danish Rasool**
 
-GitHub: https://github.com/DanishBinRasool
-LinkedIn: https://www.linkedin.com/in/danish-rasool/
+- GitHub: https://github.com/DanishBinRasool
+- LinkedIn: https://www.linkedin.com/in/danish-rasool/
