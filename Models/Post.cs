@@ -26,7 +26,7 @@ namespace BlogApp.Models
         public string FeatureImagePath { get; set; } = string.Empty;
 
         [DataType(DataType.Date)]
-        public DateTime PublishedDate { get; set; }
+        public DateTime PublishedDate { get; set; } = DateTime.Now;
 
         [ForeignKey("Category")]
         [DisplayName("Category")]
@@ -35,6 +35,6 @@ namespace BlogApp.Models
         [ValidateNever]
         public Category Category { get; set; } = null!;
 
-        ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

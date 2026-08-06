@@ -1,0 +1,133 @@
+﻿@model Post
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<style>
+
+    .content-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: sans-serif;
+    }
+
+    .feature-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+</style>
+
+
+<div class="text-end ">
+    <a class="btn btn-secondary my-3" asp-action="Edit" asp-controller="Post" asp-route-id="@Model.Id">
+        Edit
+    </a>
+    <a class="btn btn-danger mx-3 my-3" asp-action="Delete" asp-controller="Post" asp-route-id="@Model.Id">
+        Delete
+    </a>
+</div>
+
+<div class="content-wrapper">
+    <h2>@Model.Title</h2>
+    <p>
+        <span class="badge bg-primary">By: </span>
+        @Model.Author  |
+        <span class="badge bg-primary">Published On: </span>
+        @Model.PublishedDate.ToString("MMM dd,yyyy")
+    </p>
+    <span class="badge bg-secondary">Category:</span>
+    <span class="badge bg-info text-dark">@Model.Category?.Name</span>
+    <hr />
+    <img src="@Model.FeatureImagePath" alt="@Model.Title" class="feature-image" ;">
+    <hr />
+    <div>
+        @Html.Raw(Model.Content)
+    </div>
+    <hr />
+    <h4>Comments</h4>
+    @if (Model.Comments.Any())
+    {
+        <div class="commentSection">
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@comment.UserName</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@comment.CommentDate.ToString("MMM dd,yyyy")</h6>
+                        <p class="card-text">@comment.Content</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No comments for this blog post yet. Be the first to comment !</p>
+    }
+
+    <h4>Add a Comment</h4>
+
+    <form id="commentForm">
+        <input type="hidden" name="postId" value="@Model.Id" />
+        <div class=" form-group mb-3">
+            <label for="userName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="userName" name="userName" required />
+        </div>
+        <div class=" form-group  mb-3">
+            <label for="content" class="form-label">Comment</label>
+            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Comment</button>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Optional: Add any JavaScript/jQuery code here if needed
+        $(document).ready(function() {
+            // Example: Smooth scroll to comments section after adding a comment
+            $('#commentForm').on('submit', function(event) {
+                event.preventDefault();
+                var userName = $('#userName').val();
+                var content = $('#content').val();
+                var postId = @Model.Id;
+
+                $.ajax({
+                    url: '@Url.Action("AddComment", "Post")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        UserName: userName,
+                        Content: content,
+                        PostId: postId
+                    }),
+                    success: function(response) {
+                        // Clear the form fields
+                        // $('#userName').val('');
+                        // $('#content').val('');
+                        // cleat the form fields
+                        $("#commentForm")[0].reset();
+                        //Optionally, you can append the new comment to the comments section without refreshing the page
+                        var newCommentHtml = `
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">${response.userName}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">${response.commentDate}</h6>
+                                    <p class="card-text">${response.content}</p>
+                                </div>
+                            </div>
+                        `;
+                        $('.commentSection').append(newCommentHtml);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding comment:', error);
+                    }
+                    
+                });});
+            });
+    </script>
+}

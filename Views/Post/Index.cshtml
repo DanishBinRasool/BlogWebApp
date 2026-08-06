@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Post>
+﻿@using BlogApp.Helpers
+@model IEnumerable<Post>
 @{
     ViewData["Title"] = "Blog Posts";
 }
@@ -36,10 +37,13 @@
                             @post.Category?.Name
                         </span>
                         <hr />
-                    <p class="card-text">@post.Content</p>
+                    @{
+                        var content = @RemoveHtmlTagHelper.RemoveHtmlTags(post.Content);
+                    }
+                    <p class="card-text">@(content.Length > 100 ? content.Substring(0, 100) + "..." : content)</p>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a class="btn btn-primary btn-sm " asp-action="Details" asp-controller="Post" asp-route-id="@post.Id" >Read More</a>
+                    <a class="btn btn-primary btn-sm " asp-action="Detail" asp-controller="Post" asp-route-id="@post.Id" >Read More</a>
                     <small class="text-muted">Author :  @post.Author</small>
                 </div>
             </div>

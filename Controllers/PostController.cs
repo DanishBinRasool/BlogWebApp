@@ -13,8 +13,6 @@ namespace BlogApp.Controllers
                           ".avif",".webp",".jfif", ".heif", ".heic",".tif", ".tiff",".bmp",".svg",".eps","" };
 
 
-
-
         [HttpGet]
         public IActionResult Index(int? categoryId)
         {
@@ -28,6 +26,40 @@ namespace BlogApp.Controllers
             return View(posts);
         }
 
+
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            var post = await context.Posts.Include(c => c.Category).Include(p => p.Comments).FirstOrDefaultAsync(p => p.Id == id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            return View(post);
+        }
+
+
+        public JsonResult AddComment([FromBody] Comment comment)
+        {
+          
+                comment.CommentDate = DateTime.Now;
+                context.Comments.Add(comment);
+                context.SaveChanges();
+                return Json(new 
+                {
+                    userName = comment.UserName,
+                    commentDate = comment.CommentDate.ToString("MMM dd,yyyy"),
+                    content = comment.Content,
+                });
+            
+        }
+
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -40,12 +72,12 @@ namespace BlogApp.Controllers
                 }
             ).ToList();
 
-           
             return View(postViewModel);
         }
 
-        [HttpPost]
 
+
+        [HttpPost]
         public async Task<IActionResult> Create(PostViewModel postViewModel)
         {
             if (ModelState.IsValid)
@@ -75,7 +107,6 @@ namespace BlogApp.Controllers
 
                
             }
-            // If the model state is not valid,return the view
             postViewModel.Categories = context.Categories.Select(c =>
                 new SelectListItem
                 {
@@ -85,6 +116,9 @@ namespace BlogApp.Controllers
             ).ToList();
             return View(postViewModel);
         }
+
+
+
 
         private async Task<string> UploadFileToFolder(IFormFile file)
         {
