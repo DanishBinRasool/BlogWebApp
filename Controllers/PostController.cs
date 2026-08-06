@@ -27,7 +27,6 @@ namespace BlogApp.Controllers
         }
 
 
-
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
@@ -41,22 +40,6 @@ namespace BlogApp.Controllers
                 return NotFound();
             }
             return View(post);
-        }
-
-
-        public JsonResult AddComment([FromBody] Comment comment)
-        {
-          
-                comment.CommentDate = DateTime.Now;
-                context.Comments.Add(comment);
-                context.SaveChanges();
-                return Json(new 
-                {
-                    userName = comment.UserName,
-                    commentDate = comment.CommentDate.ToString("MMM dd,yyyy"),
-                    content = comment.Content,
-                });
-            
         }
 
 
@@ -76,7 +59,6 @@ namespace BlogApp.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<IActionResult> Create(PostViewModel postViewModel)
         {
@@ -85,10 +67,10 @@ namespace BlogApp.Controllers
                 var inputFileExtension = Path.GetExtension(postViewModel.FeatureImage.FileName).ToLower();
                 if(allowedImageExtensions.Contains(inputFileExtension))
                 {
-                    postViewModel.post.FeatureImagePath = await UploadFileToFolder(postViewModel.FeatureImage);
+                    postViewModel.Post.FeatureImagePath = await UploadFileToFolder(postViewModel.FeatureImage);
 
 
-                    await context.Posts.AddAsync(postViewModel.post);
+                    await context.Posts.AddAsync(postViewModel.Post);
                     await context.SaveChangesAsync();
                     return RedirectToAction("Index", "Post");
                 }
@@ -118,6 +100,151 @@ namespace BlogApp.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var post = await context.Posts.FindAsync(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+            var editViewModel = new EditViewModel
+            {
+                
+               Post = post,
+                Categories = context.Categories.Select(c =>
+                    new SelectListItem
+                    {
+                        Text = c.Name,
+                        Value = c.Id.ToString()
+                    }
+                ).ToList()
+            };
+            return View(editViewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditViewModel editViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var post = await context.Posts.FindAsync(editViewModel.Post.Id);
+                if (post == null)
+                {
+                    return NotFound();
+                }
+                post.Title = editViewModel.Post.Title;
+                post.Content = editViewModel.Post.Content;
+                post.CategoryId = editViewModel.Post.CategoryId;
+                post.Author = editViewModel.Post.Author;
+                if (editViewModel.FeatureImage != null)
+                {
+                    var inputFileExtension = Path.GetExtension(editViewModel.FeatureImage.FileName).ToLower();
+                    if (allowedImageExtensions.Contains(inputFileExtension))
+                    {
+                        var existingImagePath = Path.Combine(webHostEnvironment.WebRootPath, post.FeatureImagePath.TrimStart('/'));
+                        if(System.IO.File.Exists(existingImagePath))
+                        {
+                            System.IO.File.Delete(existingImagePath);
+                        }
+
+                        post.FeatureImagePath = await UploadFileToFolder(editViewModel.FeatureImage);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("FeatureImage", "Invalid image format. Allowed formats are: " + string.Join(", ", allowedImageExtensions));
+                        editViewModel.Categories = context.Categories.Select(c =>
+                            new SelectListItem
+                            {
+                                Text = c.Name,
+                                Value = c.Id.ToString()
+                            }
+                        ).ToList();
+                        return View(editViewModel);
+                    }
+                }
+                else
+                {
+                    post.FeatureImagePath = post.FeatureImagePath;
+                }
+                context.Posts.Update(post);
+                await context.SaveChangesAsync();
+                return RedirectToAction("Index", "Post");
+            }
+            editViewModel.Categories = context.Categories.Select(c =>
+                new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }
+            ).ToList();
+            return View(editViewModel);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var post = await context.Posts.FindAsync(id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            return View(post);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var post = await context.Posts.FindAsync(id);
+            if (post != null)
+            {
+                if (string.IsNullOrEmpty(post.FeatureImagePath) == false)
+                {
+                    var existingImagePath = Path.Combine(webHostEnvironment.WebRootPath, post.FeatureImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(existingImagePath))
+                    {
+                        System.IO.File.Delete(existingImagePath);
+                    }
+                }
+            }
+
+            else 
+            {    
+               return NotFound();
+            }
+            context.Remove(post);
+            await context.SaveChangesAsync();
+            return RedirectToAction("Index", "Post");
+
+        }
+
+        public JsonResult AddComment([FromBody] Comment comment)
+        {
+          
+                comment.CommentDate = DateTime.Now;
+                context.Comments.Add(comment);
+                context.SaveChanges();
+                return Json(new 
+                {
+                    userName = comment.UserName,
+                    commentDate = comment.CommentDate.ToString("MMM dd,yyyy"),
+                    content = comment.Content,
+                });
+            
+        }
 
 
         private async Task<string> UploadFileToFolder(IFormFile file)

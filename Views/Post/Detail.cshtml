@@ -23,10 +23,10 @@
 
 <div class="text-end ">
     <a class="btn btn-secondary my-3" asp-action="Edit" asp-controller="Post" asp-route-id="@Model.Id">
-        Edit
+        Edit Post
     </a>
     <a class="btn btn-danger mx-3 my-3" asp-action="Delete" asp-controller="Post" asp-route-id="@Model.Id">
-        Delete
+        Delete Post
     </a>
 </div>
 
@@ -91,7 +91,6 @@
         $(document).ready(function() {
             // Example: Smooth scroll to comments section after adding a comment
             $('#commentForm').on('submit', function(event) {
-                event.preventDefault();
                 var userName = $('#userName').val();
                 var content = $('#content').val();
                 var postId = @Model.Id;

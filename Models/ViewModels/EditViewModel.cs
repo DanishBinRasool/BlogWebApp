@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BlogApp.Models.ViewModels
 {
-    public class PostViewModel
+    public class EditViewModel
     {
         public Post Post { get; set; }
 
         [ValidateNever]
-        public IEnumerable<SelectListItem>  Categories { get; set; }
-        public IFormFile FeatureImage { get; set; }
+        public IEnumerable<SelectListItem> Categories { get; set; }
+        [ValidateNever]
+        public IFormFile FeatureImage { get; set; } = null!;
     }
 }
