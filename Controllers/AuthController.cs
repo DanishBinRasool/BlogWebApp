@@ -24,7 +24,8 @@ namespace BlogApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                //var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                var existingUser = await userManager.FindByEmailAsync(model.Email);
                 if (existingUser == null)
                 {
                     var user = new IdentityUser
@@ -56,6 +57,48 @@ namespace BlogApp.Controllers
                 }
             }
                 return View(model);
+        }
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var signInResult = await signInManager.PasswordSignInAsync(user, model.Password,isPersistent:false, lockoutOnFailure: false);
+                    if (signInResult.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: true);
+                        return RedirectToAction("Index", "Post");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Email or password is incorrect");
+                        return View(model);
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "Email or password is incorrect.");
+                return View(model);
+            }
+            return View(model);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Post");
         }
     }
 }
