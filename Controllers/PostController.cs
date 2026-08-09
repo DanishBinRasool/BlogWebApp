@@ -1,6 +1,7 @@
 ﻿using BlogApp.Data;
 using BlogApp.Models;
 using BlogApp.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ namespace BlogApp.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var postViewModel = new PostViewModel();
@@ -101,6 +103,7 @@ namespace BlogApp.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             if(id == null)
@@ -131,6 +134,7 @@ namespace BlogApp.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(EditViewModel editViewModel)
         {
             if (ModelState.IsValid)
@@ -190,6 +194,7 @@ namespace BlogApp.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var post = await context.Posts.FindAsync(id);
@@ -202,6 +207,7 @@ namespace BlogApp.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePost(int id)
         {
             if (id == null)
@@ -231,7 +237,7 @@ namespace BlogApp.Controllers
 
         }
 
-
+        [Authorize]
         public JsonResult AddComment([FromBody] Comment comment)
         {
           
