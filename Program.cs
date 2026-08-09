@@ -18,6 +18,14 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 1;
 }).AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true; // This will reset the expiration time if the user is active.(Recalculates).
+   
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
