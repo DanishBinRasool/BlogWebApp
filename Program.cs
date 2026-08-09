@@ -36,8 +36,13 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string adminEmail = "admin@gmail.com";
-    string adminPassword = "admin123";
+    var adminEmail = builder.Configuration["AdminCredentials:Email"]
+        ?? throw new InvalidOperationException(
+            "AdminCredentials:Email is not configured.");
+
+    var adminPassword = builder.Configuration["AdminCredentials:Password"]
+        ?? throw new InvalidOperationException(
+            "AdminCredentials:Password is not configured.");
 
     var existingAdminRole = await roleManager.FindByNameAsync("Admin");
     if(existingAdminRole == null)
@@ -45,7 +50,7 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
     var existingAdminUser = await userManager.FindByEmailAsync(adminEmail);
-    if(existingAdminRole == null)
+    if(existingAdminUser == null)
     {
         var adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail };
         await userManager.CreateAsync(adminUser,adminPassword);
