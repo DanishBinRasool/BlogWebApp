@@ -186,7 +186,7 @@ This project is intended for learning and portfolio purposes.
 **Danish Rasool**
 
 - GitHub: https://github.com/DanishBinRasool
-- LinkedIn: https://www.linkedin.com/in/DanishBinRasool/
+- LinkedIn: https://www.linkedin.com/in/danish-bin-rasool/
 
 
 
